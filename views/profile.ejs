@@ -1,0 +1,77 @@
+<% include header %>
+
+<% include nav-header %>
+
+<% include scripts %>
+
+<div class="container">
+      <div class="row">
+      
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad">
+   
+   
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Your profile</h3>
+            </div>
+            <div class="panel-body">
+            <form id="signupform" class="form-horizontal" role="form" method="post" action="/updateProfile" enctype="multipart/form-data">
+            <% if(query.error) { %>
+                <div id="signupalert" style="display:block" class="alert alert-danger">
+                    <p>Please correct the below errors:</p>
+                    <span>Your file don't have valid file extensions.</span>
+                </div>
+                <% } %>
+              <div class="row">
+                <% if(profilePicture) { %>
+                <div class="col-md-3 col-lg-3 " align="center"> 
+                <img alt="User Pic" src="./uploads/<%= profilePicture%>" class="img-thumbnail img-responsive"> 
+                </div>
+                <% } else { %>
+                <div class="col-md-3 col-lg-3 " align="center"> 
+                <img alt="User Pic" src="./images/default.png" class="img-thumbnail img-responsive"> 
+                </div>
+                <% } %>
+                <div class=" col-md-9 col-lg-9 "> 
+                  <table class="table table-user-information">
+                    <tbody>
+                     <tr>
+                        <td>Username:</td>
+                        <td><%= userSession.username %></td>
+                      </tr>
+                      <tr>
+                        <td>Firstname:</td>
+                        <td><%= userSession.firstname %></td>
+                      </tr>
+                      <tr>
+                        <td>Lastname:</td>
+                        <td><%= userSession.lastname %></td>
+                      </tr>
+                      <tr>
+                        <td>Email</td>
+                        <td><%= userSession.email %></td>
+                      </tr>
+                     <tr>
+                        <td>Profile picture</td>
+                        <td><input type="file" class="form-control" name="profilePicture" required style="border:none;">
+                        <span class="alert-danger">Only jpg,png,jpeg files are allowed</span></td>
+                      </tr>
+
+                      <tr>
+                        <td></td>
+                        <td><button id="btn-signup" type="submit" class="btn btn-info"><i class="icon-hand-right"></i> &nbsp Submit</button></td>
+                      </tr>
+                     
+                    </tbody>
+                  </table>
+                  
+                </div>
+              </div>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<% include footer %>

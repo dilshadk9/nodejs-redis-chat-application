@@ -1,0 +1,183 @@
+<% include header %>
+
+<% include nav-header %>
+
+<% include scripts %>
+
+<script>    
+    $(document).ready(function() {
+    	var host = window.location.host //.split(':')[0];
+        var socket = new io.connect('http://' + host, {
+            reconnect: false,
+            'try multiple transports': false,
+            'force new connection': false
+        });
+
+        //var reconnectCount = 0;
+    	
+        $.get('/getProfile', function(data) {
+        	email = data.email;
+        	fullname = data.firstname + ' ' + data.lastname;
+        	username = data.username;
+            pic = data.profilePicture;
+            id = data.id;
+
+            if(pic == null) {
+                pic = 'default.png';
+            }
+
+        	var msg = {
+	        	type:'chatUser',
+	        	user:fullname,
+                pic:pic,
+                email: email,
+                id: id                
+	        };
+	        socket.json.send(msg);
+        });
+
+        var content = $('.chat');
+ 
+        socket.on('connect', function() {
+            console.log("Connected");
+        });
+ 
+        socket.on('message', function(message){
+        	var objData = {
+        		'message' : message
+        	};
+        	var msgRow = generateRow(objData);
+            content.append(msgRow);
+        }) ;
+ 
+        socket.on('disconnect', function() {
+            console.log('disconnected');
+            var objData = {
+                'message' : 'Chat room is empty.'
+            };
+            var infoAlert = getInfoAlert(objData);
+            content.append(infoAlert);
+            //intervalID = setInterval(tryReconnect, 4000);
+            //setTimeout(function(){ alert("Hello"); window.location = '/profile'; }, 3000);
+        });
+
+        /*var tryReconnect = function() {
+            ++reconnectCount;
+            if (reconnectCount == 5) {
+                clearInterval(intervalID);
+            }
+            console.log('Making a dummy http call to set jsessionid (before we do socket.io reconnect)');
+            $.ajax('/chatroom')
+                .success(function() {
+                    console.log("http request succeeded");
+                    //reconnect the socket AFTER we got jsessionid set
+                    io.connect('http://' + host, {
+                        reconnect: false,
+                        'try multiple transports': false,
+                        'force new connection' : false
+                    });
+                    clearInterval(intervalID);
+                }).error(function(err) {
+                    console.log("http request failed (probably server not up yet)");
+                });
+        };*/
+ 
+        $("#btn-send-chat").click(function(){        	
+            var msg = {
+            	type: 'chat',
+            	message: $("input[name=chat-content]").val() + ':' + fullname + ':' + pic
+            }
+            socket.json.send(msg);
+            $("input[name=chat-content]").val("");
+        });
+
+        $('input[name=chat-content]').keydown(function(event) {
+        if (event.keyCode == 13) {
+            $('#btn-send-chat').click();
+	        }
+	    });
+    });
+
+    function generateRow(data) {
+    	var currentTime = new Date();
+    		currentTime = currentTime.getDate() + '/' 
+    					  + Number(currentTime.getMonth() + 1) + '/'
+    					  + currentTime.getFullYear() + ' ' 
+    					  + currentTime.getHours() + ':' 
+    					  + currentTime.getMinutes() + ':' 
+    					  + currentTime.getSeconds();
+    	var dataArr = data.message.split(':');    	
+    	var msg = dataArr[0] ;
+    	var user = dataArr[1] ;
+        var pic = dataArr[2];
+    	var msgRow = "<li class=\"left clearfix\"><span class=\"chat-img pull-left\">";
+            msgRow += "<img src=\"./uploads/"+pic+"\" alt=\"User Avatar\" class=\"img-circle\" style=\"width:50px;height:50px;\"></span>";
+            msgRow += "<div class=\"chat-body clearfix\">";
+            msgRow += "<div class=\"header\">";
+            msgRow += "<strong class=\"primary-font\">" + user + "</strong> <small class=\"pull-right text-muted\">";
+            msgRow += "<span class=\"glyphicon glyphicon-time\"></span>" + currentTime + "</small>";
+            msgRow += "</div><p class=\"chat_msg\">" + msg + "</p></div></li>";
+        return msgRow;    
+    }
+
+    function getInfoAlert(data) {
+        var infoAlert = "<div class=\"alert alert-info\"><strong>Info!</strong> " + data.message + "</div>";
+        return infoAlert;
+    }
+
+    
+    function getOnlineUserCount() {
+        $.get('/onlineUserCount', function(data) {
+            $('#ou').html(data.count);
+        });
+    }
+    setInterval(getOnlineUserCount, 3000);
+	
+	window.setInterval(function() {
+	  var elem = document.getElementById('mainChat');
+	  elem.scrollTop = elem.scrollHeight;
+	}, 500);
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-comment"></span> Chat Room - Users Online : <span id="ou">Processing...</span>
+                    <!--<div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-chevron-down"></span>
+                        </button>
+                        <ul class="dropdown-menu slidedown">
+                            <li><a href="#"><span class="glyphicon glyphicon-refresh">
+                            </span>Refresh</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-ok-sign">
+                            </span>Available</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-remove">
+                            </span>Busy</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-time"></span>
+                                Away</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-off"></span>
+                                Sign Out</a></li>
+                        </ul>
+                    </div>-->
+                </div>
+                <div class="panel-body panel-body-custom" id="mainChat">
+                    <ul class="chat"></ul>
+                </div>
+                <div class="panel-footer">
+                    <div class="input-group">
+                        <input id="chat-content" name="chat-content" type="text" value="" class="form-control input-sm" placeholder="Type your message here...">
+                        <span class="input-group-btn">
+                            <button class="btn btn-warning btn-sm" id="btn-send-chat" name="btn-send-chat">
+                                Send</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include footer %>

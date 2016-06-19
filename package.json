@@ -1,0 +1,35 @@
+{
+  "name": "nodejs-redis-chat-application",
+  "version": "1.0.0",
+  "description": "Chatroom application using Nodejs and Redis",
+  "main": "app.js",
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.15.1",
+    "connect-redis": "^3.0.2",
+    "crypto": "0.0.3",
+    "ejs": "^2.4.1",
+    "events": "^1.1.0",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0",
+    "fs": "^0.0.2",
+    "moment": "^2.13.0",
+    "multer": "^1.1.0",
+    "redis": "^2.5.3",
+    "socket.io": "^1.4.6",
+    "url": "^0.11.0",
+    "validator": "^5.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dilshadk9/nodejs-redis-chat-application"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/dilshadk9/nodejs-redis-chat-application#readme"
+}
