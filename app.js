@@ -91,19 +91,24 @@ var io = require('socket.io').listen(httpServer);
 
 io.sockets.on('connection', function (socket) {
   
-  sub.subscribe("chatting");
+  sub.subscribe("chatting","typing");
+  //sub.subscribe("typing");
 
   sub.on("message", function (channel, message) {
       console.log("message received on server from publish " + channel);
-      socket.send(message);
+      socket.send(channel,message);  
   });
   var currentEmail = '';
+
+  socket.on("typing",function(user){
+      pub.publish("typing", user.uname+':'+user.name);
+  });
+
   //var membersOnline = {};
   socket.on("message", function (msg) {
-    console.log(msg);
+    console.log("server message");
+
       if(msg.type == "chat"){
-        console.log("in app");
-        console.log(msg.message);
           pub.publish("chatting", msg.message);
       }
       else if(msg.type == "chatUser"){

@@ -4,6 +4,7 @@
 
 <% include scripts %>
 
+
 <script>    
     var  username = "";
     $(document).ready(function() {
@@ -46,14 +47,23 @@
             console.log("Connected");
         });
  
-        socket.on('message', function(message){
-        	var objData = {
-        		'message' : message
-        	};
-        	var msgRow = generateRow(objData);
-            content.append(msgRow);
-        }) ;
- 
+        socket.on('message', function(channel,message){
+            if(channel == "typing"){
+                var msg = message.split(':'); 
+                if(msg[0] != username){
+                    $('.textTyping').show();
+                    $('.textTyping').html(msg[1]+" is typing...");    
+                }      
+            }else{
+                var objData = {
+                    'message' : message
+                };
+                var msgRow = generateRow(objData);
+                content.append(msgRow);    
+            }
+        	
+        });
+
         socket.on('disconnect', function() {
             console.log('disconnected');
             var objData = {
@@ -86,6 +96,7 @@
                 });
         };*/
  
+
         $("#btn-send-chat").click(function(){        	
             var msg = {
             	type: 'chat',
@@ -99,6 +110,11 @@
         if (event.keyCode == 13) {
             $('#btn-send-chat').click();
 	        }
+            var typeDetails = {
+                name: fullname,
+                uname: username
+            }
+            socket.emit("typing",typeDetails);
 	    });
     });
 var monthNames = ["January", "February", "March", "April", "May", "June",
@@ -156,7 +172,9 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
         $.get('/onlineUserCount', function(data) {
             $('#ou').html(data.count);
         });
+        $('.textTyping').hide();
     }
+
     setInterval(getOnlineUserCount, 3000);
 	
 	window.setInterval(function() {
@@ -169,7 +187,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
         <div class="col-md-12">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-comment"></span> Chat Room - Users Online : <span id="ou">Processing...</span>
+                    <span class="glyphicon glyphicon-comment"></span> Chat Room -  Users Online : <span id="ou">Processing...</span>
                     <!--<div class="btn-group pull-right">
                         <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
                             <span class="glyphicon glyphicon-chevron-down"></span>
@@ -193,6 +211,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
                     <ul class="chat"></ul>
                 </div>
                 <div class="panel-footer">
+                            <small class="textTyping" style="display:none;"></small>
                     <div class="input-group">
                         <input id="chat-content" name="chat-content" type="text" value="" class="form-control input-sm" placeholder="Type your message here...">
                         <span class="input-group-btn">
