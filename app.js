@@ -100,11 +100,14 @@ io.sockets.on('connection', function (socket) {
   var currentEmail = '';
   //var membersOnline = {};
   socket.on("message", function (msg) {
+    console.log(msg);
       if(msg.type == "chat"){
+        console.log("in app");
+        console.log(msg.message);
           pub.publish("chatting", msg.message);
       }
       else if(msg.type == "chatUser"){
-          pub.publish("chatting","is connected in chat room:" + msg.user + ':' + msg.pic);
+          pub.publish("chatting","is connected in chat room:" + msg.user + ':' + msg.pic+ ':' + msg.username);
           store.sadd("onlineUsers", msg.email);
           currentEmail = msg.email;
           /*client.setbit('membersOnline', msg.id, 1);

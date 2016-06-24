@@ -5,6 +5,7 @@
 <% include scripts %>
 
 <script>    
+    var  username = "";
     $(document).ready(function() {
     	var host = window.location.host //.split(':')[0];
         var socket = new io.connect('http://' + host, {
@@ -14,7 +15,7 @@
         });
 
         //var reconnectCount = 0;
-    	
+    
         $.get('/getProfile', function(data) {
         	email = data.email;
         	fullname = data.firstname + ' ' + data.lastname;
@@ -22,6 +23,8 @@
             pic = data.profilePicture;
             id = data.id;
 
+            console.log(username);   
+            
             if(pic == null) {
                 pic = 'default.png';
             }
@@ -31,7 +34,8 @@
 	        	user:fullname,
                 pic:pic,
                 email: email,
-                id: id                
+                id: id,
+                username: username                 
 	        };
 	        socket.json.send(msg);
         });
@@ -85,7 +89,7 @@
         $("#btn-send-chat").click(function(){        	
             var msg = {
             	type: 'chat',
-            	message: $("input[name=chat-content]").val() + ':' + fullname + ':' + pic
+            	message: $("input[name=chat-content]").val() +":" + fullname + ':' + pic+ ':'+username
             }
             socket.json.send(msg);
             $("input[name=chat-content]").val("");
@@ -97,25 +101,47 @@
 	        }
 	    });
     });
-
+var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
     function generateRow(data) {
     	var currentTime = new Date();
-    		currentTime = currentTime.getDate() + '/' 
-    					  + Number(currentTime.getMonth() + 1) + '/'
+    		currentTime = currentTime.getDate() + ' ' 
+    					  + monthNames[Number(currentTime.getMonth() + 1)] + ' '
     					  + currentTime.getFullYear() + ' ' 
     					  + currentTime.getHours() + ':' 
-    					  + currentTime.getMinutes() + ':' 
-    					  + currentTime.getSeconds();
-    	var dataArr = data.message.split(':');    	
+    					  + currentTime.getMinutes();
+    					  //+ currentTime.getSeconds();
+    	var dataArr = data.message.split(':');    
+        console.log(dataArr);	
+        console.log(username);   
     	var msg = dataArr[0] ;
     	var user = dataArr[1] ;
         var pic = dataArr[2];
-    	var msgRow = "<li class=\"left clearfix\"><span class=\"chat-img pull-left\">";
-            msgRow += "<img src=\"./uploads/"+pic+"\" alt=\"User Avatar\" class=\"img-circle\" style=\"width:50px;height:50px;\"></span>";
-            msgRow += "<div class=\"chat-body clearfix\">";
+        var chatUsername = dataArr[3];
+ 
+        var applyClass = "pull-left";
+        var dontShow = "";
+        var someTimeDontShow = "";
+
+        if(chatUsername == username){
+               applyClass= "right";
+               user = "You";
+               someTimeDontShow = "style='display:none'";
+        }
+       
+
+         if(msg =="is connected in chat room" && chatUsername == username){
+                 dontShow = "style='display:none'";
+         } 
+
+          var style = "style='display:none'";   
+    	var msgRow = "<li "+dontShow+" class=\"left clearfix\"><span class=\"chat-img  "+applyClass+"\">";
+            msgRow += "<img src=\"./uploads/"+pic+"\" alt=\"User Avatar\" "+someTimeDontShow+" class=\"img-circle\" style=\"width:50px;height:50px;\"></span>";
+            msgRow += "<div class=\"chat-body clearfix "+applyClass+"\">";
             msgRow += "<div class=\"header\">";
-            msgRow += "<strong class=\"primary-font\">" + user + "</strong> <small class=\"pull-right text-muted\">";
-            msgRow += "<span class=\"glyphicon glyphicon-time\"></span>" + currentTime + "</small>";
+            msgRow += "<strong class=\"primary-font\">" + user + "</strong> <small class=\"pull-right clearfix text-muted\">";
+            msgRow += "<span class=\"glyphicon glyphicon-time\" "+style+"></span>" + currentTime + "</small>";
             msgRow += "</div><p class=\"chat_msg\">" + msg + "</p></div></li>";
         return msgRow;    
     }
