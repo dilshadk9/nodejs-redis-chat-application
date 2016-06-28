@@ -98,7 +98,7 @@ io.sockets.on('connection', function (socket) {
       console.log("message received on server from publish " + channel);
       socket.send(channel,message);  
   });
-  var currentEmail = '';
+  var currentEmailAndFullName = '';
 
   socket.on("typing",function(user){
       pub.publish("typing", user.uname+':'+user.name);
@@ -113,15 +113,15 @@ io.sockets.on('connection', function (socket) {
       }
       else if(msg.type == "chatUser"){
           pub.publish("chatting","is connected in chat room:" + msg.user + ':' + msg.pic+ ':' + msg.username);
-          store.sadd("onlineUsers", msg.email);
-          currentEmail = msg.email;
+          store.sadd("onlineUsers", msg.email + ":" + msg.user);
+          currentEmailAndFullName = msg.email + ":" + msg.user;
           /*client.setbit('membersOnline', msg.id, 1);
           membersOnline.id = msg.id;*/
       }
   });
 
   socket.on('disconnect', function () {
-      store.srem("onlineUsers", currentEmail);
+      store.srem("onlineUsers", currentEmailAndFullName);
       //client.setbit('membersOnline', membersOnline.id, 0);
       console.log('Disconnect');
   });
@@ -387,7 +387,7 @@ eventEmitter.on("createAccount", function(req, res){
 
 
 /*
-To logout from the application and destroy the session.
+To count the online users.
 */
 app.get('/onlineUserCount',function(req,res) {
     /*client.bitcount('membersOnline', function(err, cnt) {
@@ -395,7 +395,23 @@ app.get('/onlineUserCount',function(req,res) {
     });*/
     if(req.session.email) {
       client.scard('onlineUsers', function(err, cnt) {
-        res.send({'count': cnt})
+        res.send({'count': (parseInt(cnt) - 1)})
+      });  
+    }
+    else {
+      res.send('Session expired. Please login again!');
+    }
+    
+});
+
+/*
+To show the list of online users.
+*/
+app.get('/showOnlineUsers',function(req,res) {
+    if(req.session.email) {
+      client.smembers('onlineUsers', function(err, obj) {
+        var resultObj = searchEmailInObj(obj, req.session.email);
+        res.send(resultObj); 
       });  
     }
     else {
@@ -438,3 +454,18 @@ var getSaltHashPassword = function(password, salt){
         passwordHash:value
     };
 };
+
+/*
+To search email in objects and return the unmatched data
+*/
+var searchEmailInObj = function(array, value) {
+  var user = [];
+    for (var i = 0; i < array.length; i++) {
+        var email = array[i].split(':');
+        if (email[0] != value) {
+            user[i] = array[i];
+        }
+    }
+    return user;
+}
+

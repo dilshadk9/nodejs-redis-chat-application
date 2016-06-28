@@ -1,6 +1,7 @@
 
-var  username = "";
+var  username = '';
 $(document).ready(function() {
+    listOnlineUsers();
 	var host = window.location.host //.split(':')[0];
     var socket = new io.connect('http://' + host, {
         reconnect: false,
@@ -14,8 +15,6 @@ $(document).ready(function() {
     	username = data.username;
         pic = data.profilePicture;
         id = data.id;
-
-        console.log(username);   
         
     	var msg = {
         	type:'chatUser',
@@ -122,6 +121,17 @@ function generateRow(data) {
     msgRow += "<span class=\"glyphicon glyphicon-time\"></span>" + currentTime + "</small>";
     msgRow += "</div><p class=\"chat_msg\">" + msg + "</p></div></li>";
     return msgRow;    
+}
+
+function listOnlineUsers() {
+    $.get('/showOnlineUsers', function(arr) {
+        $.each( arr, function( key, value ) {
+          if(value !== null) {
+                var data = value.split(':');
+                $('#user-list ul').append('<li class="list-group-item">' + data[1] + '</li>');
+           }
+        });       
+    });
 }
 
 function getInfoAlert(data) {
