@@ -128,7 +128,17 @@ function listOnlineUsers() {
         $.each( arr, function( key, value ) {
           if(value !== null) {
                 var data = value.split(':');
-                $('#user-list ul').append('<li class="list-group-item">' + data[1] + '</li>');
+                var name = data[1];
+                var pic = data[2];
+                var imgPath = '';
+                if(pic === 'null') {
+                    imgPath = './images/default.png';
+                }
+                else {
+                    imgPath = './uploads/'+pic;
+                }
+                var userList = '<li class="list-group-item"> <span class="chat-img  pull-left"><img src="' + imgPath + '" alt="User Avatar" class="img-circle user-list-pic"></span> <span class="pdleft8 valignbmiddle">' + name + '</li>';
+                $('#user-list ul').append(userList);
            }
         });       
     });

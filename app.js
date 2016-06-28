@@ -113,8 +113,8 @@ io.sockets.on('connection', function (socket) {
       }
       else if(msg.type == "chatUser"){
           pub.publish("chatting","is connected in chat room:" + msg.user + ':' + msg.pic+ ':' + msg.username);
-          store.sadd("onlineUsers", msg.email + ":" + msg.user);
-          currentEmailAndFullName = msg.email + ":" + msg.user;
+          store.sadd("onlineUsers", msg.email + ":" + msg.user + ":" + msg.pic);
+          currentEmailAndFullName = msg.email + ":" + msg.user + ":" + msg.pic;
           /*client.setbit('membersOnline', msg.id, 1);
           membersOnline.id = msg.id;*/
       }

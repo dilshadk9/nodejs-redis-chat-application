@@ -78,12 +78,26 @@
     height:50px;
 }
 
+.user-list-pic {
+    width:30px;
+    height:30px;
+}
+
 .pd0 {
     padding: 0px;
 }
 
 .pd15 {
     padding: 15px;
+}
+
+.pdleft8 {
+  padding-left: 8px;
+}
+
+.valignbmiddle {
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: -moz-middle-with-baseline;
 }
 
 .bdr-right0 li {
