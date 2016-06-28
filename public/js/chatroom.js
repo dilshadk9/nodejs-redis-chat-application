@@ -1,7 +1,7 @@
 
 var  username = '';
 $(document).ready(function() {
-    listOnlineUsers();
+    //listOnlineUsers();
 	var host = window.location.host //.split(':')[0];
     var socket = new io.connect('http://' + host, {
         reconnect: false,
@@ -130,6 +130,8 @@ function listOnlineUsers() {
                 var data = value.split(':');
                 var name = data[1];
                 var pic = data[2];
+                var id = data[3];
+                var username = data[4];
                 var imgPath = '';
                 if(pic === 'null') {
                     imgPath = './images/default.png';
@@ -137,7 +139,10 @@ function listOnlineUsers() {
                 else {
                     imgPath = './uploads/'+pic;
                 }
-                var userList = '<li class="list-group-item"> <span class="chat-img  pull-left"><img src="' + imgPath + '" alt="User Avatar" class="img-circle user-list-pic"></span> <span class="pdleft8 valignbmiddle">' + name + '</li>';
+                if (!$('.list-group-item').hasClass("c-"+id)) {
+                    var userList = '<li class="list-group-item c-'+id+'"> <span class="chat-img  pull-left"><img src="' + imgPath + '" alt="User Avatar" class="img-circle user-list-pic"></span> <span class="pdleft8 valignbmiddle">' + name + '</li>';
+                }
+
                 $('#user-list ul').append(userList);
            }
         });       
@@ -171,4 +176,9 @@ function getOnlineUserCount() {
     $('.textTyping').hide();
 }
 
-setInterval(getOnlineUserCount, 3000);
+//setInterval(getOnlineUserCount, 3000);
+
+window.setInterval(function(){
+  getOnlineUserCount();
+  listOnlineUsers();
+}, 3000);
