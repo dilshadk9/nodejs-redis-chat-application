@@ -125,6 +125,7 @@ function generateRow(data) {
 
 function listOnlineUsers() {
     $.get('/showOnlineUsers', function(arr) {
+        $('#user-list ul').empty();
         $.each( arr, function( key, value ) {
           if(value !== null) {
                 var data = value.split(':');
