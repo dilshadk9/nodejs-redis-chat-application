@@ -61,12 +61,15 @@ $(document).ready(function() {
     });
 
     $("#btn-send-chat").click(function(){        	
+        var message = $("input[name=chat-content]").val();
         var msg = {
         	type: 'chat',
-        	message: $("input[name=chat-content]").val() + ":" + fullname + ':' + pic + ':' + username
+        	message: message + ":" + fullname + ':' + pic + ':' + username
         }
-        socket.json.send(msg);
-        $("input[name=chat-content]").val("");
+        if($.trim(message).length > 0) {
+            socket.json.send(msg);
+            $("input[name=chat-content]").val("");
+        }
     });
 
     $('input[name=chat-content]').keydown(function(event) {
