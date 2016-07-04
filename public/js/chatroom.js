@@ -156,10 +156,10 @@ function getInfoAlert(data) {
 }
 
 function getCurrentTime() {
-    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];    
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];    
     var currentTime = new Date();
         currentTime = currentTime.getDate() + ' ' 
-                      + monthNames[Number(currentTime.getMonth() + 1)] + ' '
+                      + monthNames[parseInt(currentTime.getMonth())] + ' '
                       + currentTime.getFullYear() + ' ' 
                       + currentTime.getHours() + ':' 
                       + currentTime.getMinutes();

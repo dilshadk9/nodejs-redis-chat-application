@@ -150,3 +150,8 @@
     transform: rotate(359deg);
   }
 }
+
+.typing {
+  position:absolute;
+  top:470px;
+}
