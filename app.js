@@ -89,41 +89,61 @@ var httpServer = require('http').createServer(app).listen(app.get('port'), funct
 
 var io = require('socket.io').listen(httpServer);
 
-io.sockets.on('connection', function (socket) {
-  
-  sub.subscribe("chatting","typing");
-  //sub.subscribe("typing");
 
-  sub.on("message", function (channel, message) {
-      console.log("message received on server from publish " + channel);
-      socket.send(channel,message);  
-  });
+
+io.sockets.on('connection', function (socket) {
+
   var currentEmailAndFullName = '';
 
-  socket.on("typing",function(user){
-      pub.publish("typing", user.uname+':'+user.name);
+  socket.on('join', function (data) {
+    socket.join(data.username); // We are using room of socket io
   });
 
-  //var membersOnline = {};
-  socket.on("message", function (msg) {
-    console.log("server message");
 
-      if(msg.type == "chat"){
-          pub.publish("chatting", msg.message);
-      }
-      else if(msg.type == "chatUser"){
-          pub.publish("chatting","is connected in chat room:" + msg.user + ':' + msg.pic+ ':' + msg.username);
-          store.sadd("onlineUsers", msg.email + ":" + msg.user + ":" + msg.pic + ":" + msg.id + ":" + msg.username);
-          currentEmailAndFullName = msg.email + ":" + msg.user + ":" + msg.pic + ":" + msg.id + ":" + msg.username;
-          /*client.setbit('membersOnline', msg.id, 1);
-          membersOnline.id = msg.id;*/
-      }
+  //Purpose: To display typing hint in public chat room if someone is typing.
+  socket.on("typing",function(user){
+      io.emit("typing", user);
+  });
+
+  //Purpose: To send private chat message.
+  socket.on("private_chat",function(msg){
+      
+      var fromUsername = msg.username;
+      var toUsername = msg.toUser;
+
+      //To will send private message to target user.
+      io.sockets.in(toUsername).emit('private_message', msg);
+
+      //To will send private message copy to sender.
+      io.sockets.in(fromUsername).emit('private_message', msg);
+  });
+ 
+  //Purpose: To send public chat message.
+  socket.on("public_chat",function(msg){
+      io.emit("public_message", msg);
+  });
+
+  //Purpose: To notify if new user is connected.
+  socket.on("user_details",function(msg){
+          
+          var msg_with_user = {
+              message : "is connected in chat room",
+              fullname : msg.fullname,
+              pic : msg.pic,
+              username: msg.username
+          };
+
+   
+          io.emit("public_message",msg_with_user);
+
+          store.sadd("onlineUsers", msg.email + ":" + msg.fullname + ":" + msg.pic + ":" + msg.id + ":" + msg.username);
+          currentEmailAndFullName = msg.email + ":" + msg.fullname + ":" + msg.pic + ":" + msg.id + ":" + msg.username;
+          
   });
 
   socket.on('disconnect', function () {
       store.srem("onlineUsers", currentEmailAndFullName);
-      //client.setbit('membersOnline', membersOnline.id, 0);
-      console.log('Disconnect');
+      console.log('\nDisconnect\n'+currentEmailAndFullName);
   });
 
 });
@@ -133,7 +153,7 @@ To display the home page.
 */
 app.get('/', function(req, res) {
  var response = {
-      'pageTitle' : 'Node.js and Redis chat application'
+      'pageTitle' : 'Gupshup Chat'
     };
  res.render('index', response);   
 });

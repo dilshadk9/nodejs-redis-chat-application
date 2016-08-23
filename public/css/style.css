@@ -11,7 +11,14 @@
     padding-bottom: 5px;
     border-bottom: 1px dotted #B3A9A9;
 }
-
+.panel-body-small-custom{
+    overflow-y: scroll;
+    height: 150px;
+};
+.private-user-pic{
+    width: 25px;
+    height: 25px;
+}
 .chat li.left .chat-body
 {
     margin-left: 10px;

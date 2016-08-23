@@ -5,7 +5,9 @@
 <% include scripts %>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.6/socket.io.js"></script>
-<script src="./js/chatroom.js"></script>
+
+
+
 
 <div class="container">
     <div class="row">
@@ -50,37 +52,26 @@
         <div class="col-xs-3 pd0">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-user"></span> <span>Online Users</span> <span class="badge" id="ou"><span class="glyphicon glyphicon-refresh gly-spin"></span></span>
+                    <span class="glyphicon glyphicon-user"></span> 
+                    <span>Online Users</span> 
+                    <span class="badge" id="ou">
+                        <span class="glyphicon glyphicon-refresh gly-spin"></span>
+                    </span>
                 </div>
                 <div class="panel-body panel-body-custom pd0 ulist" id="user-list" data-toggle="modal" data-target="#privateChat">
-                        <ul class="list-group bdr-right0">
-                        </ul>
+                            <ul class="list-group bdr-right0">
+                            </ul>
                 </div>
-                <div class="panel-footer pd15">
+            <div class="panel-footer pd15">
                     <div class="input-group">
                         Click on user to initiate private chat.
                     </div>
-                </div>
+            </div>
             </div>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="privateChat" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Private Chat</h4>
-        </div>
-        <div class="modal-body">
-          <p>Coming soon.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+<div class="loadInner" style="display:none">
+</div>
+<script src="./js/chatroom.js"></script>
 <% include footer %>
