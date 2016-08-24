@@ -4,10 +4,10 @@
 
 <% include scripts %>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.6/socket.io.js"></script>
-
-
-
+<link rel="stylesheet" href="./emoji/css/cover.css"/>
+<link rel="stylesheet" href="./css/font-awesome.min.css"/>
+<link href="./emoji/css/nanoscroller.css" rel="stylesheet">
+<link href="./emoji/css/emoji.css" rel="stylesheet">
 
 <div class="container">
     <div class="row">
@@ -40,10 +40,13 @@
                 </div>
                 <div class="panel-footer">
                     <div class="input-group">
-                        <input id="chat-content" name="chat-content" type="text" value="" class="form-control input-sm" placeholder="Type your message here...">
+                         <p class="lead emoji-picker-container">
+                           <input id="chat-content" name="chat-content" type="text" value="" class="form-control input-sm" placeholder="Type your message here..." data-emojiable="true">
+                        </p>
                         <span class="input-group-btn">
-                            <button class="btn btn-warning btn-sm" id="btn-send-chat" name="btn-send-chat">
-                                Send</button>
+                                <a href="javascript:void(0);" class="btn btn-info btn-sm" id="btn-send-chat">
+                                  <span class="glyphicon glyphicon-send"></span> Send
+                                </a>
                         </span>
                     </div>
                 </div>
@@ -71,7 +74,16 @@
         </div>
     </div>
 </div>
-<div class="loadInner" style="display:none">
-</div>
+
+<div class="loadInner" style="display:none;"></div>
+
+<script src="./js/socket.io.js"></script>
+<script src="./emoji/js/nanoscroller.min.js"></script>
+<script src="./emoji/js/tether.min.js"></script>
+<script src="./emoji/js/config.js"></script>
+<script src="./emoji/js/util.js"></script>
+<script src="./emoji/js/jquery.emojiarea.js"></script>
+<script src="./emoji/js/emoji-picker.js"></script>
 <script src="./js/chatroom.js"></script>
+
 <% include footer %>

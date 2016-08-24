@@ -79,7 +79,8 @@ $(document).ready(function() {
 
     //Purpose: To send message to public chat window on click event.
     $("#btn-send-chat").click(function(){        	
-        var message = $("input[name=chat-content]").val();
+        //var message = $("input[name=chat-content]").val();
+          var message = $(".emoji-wysiwyg-editor").html();
         var msg_with_user = {
             message : message,
             fullname : fullname,
@@ -89,12 +90,13 @@ $(document).ready(function() {
 
         if($.trim(message).length > 0) {
             socket.emit('public_chat',msg_with_user);
-            $("input[name=chat-content]").val("");
+            //$("input[name=chat-content]").val("");
+             $(".emoji-wysiwyg-editor").html("");
         }
     });
 
     //Purpose: To send message to private chat window on click event.
-    $('body').on('click', '.btn-sm', function(){    
+    $('body').on('click', '.btn-private-chat', function(){    
         var id = $(this).attr('id');
         var message = $("input[name=chat-private-content-"+id+"]").val();
         var toUser = online_user_names[id];
@@ -153,6 +155,8 @@ $(document).ready(function() {
 
         socket.emit("private-typing",typeDetails);
     });
+
+     initEmoji();
 });    
 
 //Purpose: To generate chat message in private chat window.
@@ -185,7 +189,7 @@ function generateRowPrivate(data) {
     if(pic == null) {
         imgPath = './images/default.png';
     } 
-    else {
+    else {  
         imgPath = './uploads/' + pic;
     }
 
@@ -220,7 +224,6 @@ function generateRow(data) {
 
     if(msg =="is connected in chat room" && chatUsername == username){
              hideRow = "hide";
-             console.log("me....");
     }
 
     if(pic == null) {
@@ -242,11 +245,26 @@ function generateRow(data) {
 
 //Purpose: To generate private chat windows for online users.
 function privateContent(online_user_names,private_content_Callback){
+    initEmoji();
     $('.loadInner').html('');
     
     var onlineUsers = $('#ou').text();
     for(var i=0; i<onlineUsers; i++) {
-        var content = '<div class="DemoContainer'+i+'"><div class="panel-body panel-body-small-custom" id="smallChat'+i+'"><ul class="chat'+i+' chatNoStyle" style="list-style:none;margin: 0;padding: 0;"></ul><span class="typing'+i+'"><small class="textTyping'+i+'"></small></span></div><div class="panel-footer"><div class="input-group"><input id="chat-private-content-'+i+'" name="chat-private-content-'+i+'" type="text" value="" class="form-control private-control input-sm" placeholder="Type your message here..."><span class="input-group-btn"><button class="btn btn-warning btn-sm" id="'+i+'" name="btn-send-private-chat">Send</button></span></div></div></div>';
+        var content = '<div class="DemoContainer'+i+'">';
+        content += '<div class="panel-body panel-body-small-custom" id="smallChat'+i+'">';
+        content += '<ul class="chat'+i+' chatNoStyle" style="list-style:none;margin: 0;padding: 0;"></ul>';
+        content += '<span class="typing'+i+'"><small class="textTyping'+i+'"></small></span>';
+        content += '</div>';
+        content += '<div class="panel-footer">';
+        content += '<div class="input-group">';
+        //content += '<input id="chat-private-content-'+i+'" name="chat-private-content-'+i+'" type="text" value="" class="form-control private-control input-sm" placeholder="Type your message here...">';
+        content += '<p class="lead emoji-picker-container">';
+        content += '<input id="chat-private-content-'+i+'" name="chat-private-content-'+i+'" type="text" value="" class="form-control private-control input-sm" placeholder="Type your message here..." data-emojiable="true">';
+        content += '</p>';
+        content += '<span class="input-group-btn">';
+        content += '<a href="javascript:void(0);" class="btn btn-info btn-sm btn-private-chat" id="'+i+'">';
+        content += '<span class="glyphicon glyphicon-send"></span> Send';
+        content += '</a></span></div></div></div>';
 
         $('.loadInner').append(content);
 
@@ -345,6 +363,17 @@ function scrollDownDiv() {
 //Purpose: To scroll down to bottom in private chat window.
 function scrollDownPrivateDiv(id) {
     $("#smallChat"+id).animate({ scrollTop: 9999 }, 'fast');
+}
+
+//Purpose: To initiate emoji in public/private chat window.
+function initEmoji() {    
+// Initializes and creates emoji set from sprite sheet
+  window.emojiPicker = new EmojiPicker({
+    emojiable_selector: '[data-emojiable=true]',
+    assetsPath: './emoji/img',
+    popupButtonClasses: 'fa fa-smile-o'
+  });
+  window.emojiPicker.discover();
 }
 
 //Purpose: To check for new online users after every 3 seconds.
